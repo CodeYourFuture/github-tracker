@@ -10,7 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "googleapis": "^123.0.0",
-    "moment": "^2.29.4"
+    "@googleapis/sheets": "^5.0.1",
+    "dayjs": "^1.11.9",
+    "google-auth-library": "^9.0.0"
   }
 }
