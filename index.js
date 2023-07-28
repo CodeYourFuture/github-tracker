@@ -14,12 +14,12 @@ const auth = new google.auth.GoogleAuth({
     credentials: creds.gcpKey,
     scopes: "https://www.googleapis.com/auth/spreadsheets",
 });
-const googleSheetsInstance = google.sheets({ version: "v4", auth });
+const service = google.sheets({ version: "v4", auth });
 const spreadsheetId = "14_qFhVEdgBLXScjCHFySI6NFZMnT3l02bKDoGhxq4ZM";
 
 async function updateGitHub() {
     try {
-        const readData = await googleSheetsInstance.spreadsheets.values.get({
+        const readData = await service.spreadsheets.values.get({
             spreadsheetId,
             range: "GitHub-2!C:C",
         })
@@ -72,82 +72,31 @@ async function modifyUsers() {
     }
 
     if (userCount > 0) {
-        const seconds = nextReset - moment().unix();
+        const seconds = (nextReset - moment().unix()) + 1;
         console.log(`Waiting for ${seconds} seconds till next reset...`)
         setTimeout(() => {
             modifyUsers();
         }, seconds * 1000);
     } else {
         users[0][0] = "Github commits/week";
-        console.log(users);
+        insertData();
     }
 }
 
-
-
-
-
-// INSIDE THE FOR LOOP
-// const username = readData.data.values[index][0];
-
-// const res = await fetch(`https://api.github.com/search/commits?q=author:${username}+committer-date:${weekAgo}..${today}`, {
-//     headers: {
-//         'Authorization': `Bearer ${creds.gitHubToken}`,
-//         'Accept': 'application/vnd.github+json',
-//         'X-GitHub-Api-Version': '2022-11-28'
-//     }
-// });
-
-// if (res.ok) {
-//     const data = await res.json();
-
-//     const countWeek = data["total_count"];
-
-//     readData.data.values[index][0] = countWeek;
-
-//     index++;
-//     userCount--;
-
-//     console.log(username, countWeek);
-// } else {
-//     const data = await res.json();
-//     console.log(data.message);
-//     process.exit(1);
-// }
-
-
-
-
-
-
-
-
-
-
-
-// const username = readData.data.values[0][0];
-
-        // const today = moment().format("YYYY-MM-DD");
-        // const weekAgo = moment().subtract(8, 'days').format("YYYY-MM-DD");
-
-        // const res = await fetch(`https://api.github.com/search/commits?q=author:${username}+committer-date:${weekAgo}..${today}`, {
-        //     headers: {
-        //         'Authorization': `Bearer ${creds.gitHubToken}`,
-        //         'Accept': 'application/vnd.github+json',
-        //         'X-GitHub-Api-Version': '2022-11-28'
-        //     }
-        // });
-        // const data = await res.json();
-
-        // const countWeek = data["total_count"];
-
-        // await googleSheetsInstance.spreadsheets.values.update({
-        //     spreadsheetId,
-        //     range: "GitHub!D2",
-        //     valueInputOption: "USER_ENTERED",
-        //     resource: {
-        //         values: [[countWeek]],
-        //     }
-        // });
-
-        // console.log("Done.");
+async function insertData() {
+    try {
+        await service.spreadsheets.values.update({
+            spreadsheetId,
+            range: "GitHub-2!D:D",
+            valueInputOption: "USER_ENTERED",
+            resource: {
+                values: users
+            },
+        });
+    
+        console.log("All done!");
+        
+    } catch (error) {
+        console.log(error.message);
+    }
+}
