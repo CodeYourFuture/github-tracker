@@ -14,5 +14,8 @@
     "dayjs": "^1.11.9",
     "dotenv": "^16.3.1",
     "google-auth-library": "^9.0.0"
+  },
+  "engines": {
+    "node": "18.x.x"
   }
 }
