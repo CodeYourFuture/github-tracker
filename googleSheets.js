@@ -20,4 +20,16 @@ async function getUsers() {
     return readData.data.values;
 }
 
+async function updateCommits(commits) {
+    await service.spreadsheets.values.update({
+        spreadsheetId,
+        range: "GitHub!D:D",
+        valueInputOption: "USER_ENTERED",
+        resource: {
+            values: commits
+        },
+    });
+}
+
 module.exports.getUsers = getUsers;
+module.exports.updateCommits = updateCommits;

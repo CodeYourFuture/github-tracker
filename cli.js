@@ -2,7 +2,7 @@ const index = require(".");
 
 (async () => {
     try {
-        await index.fillSpreadsheet();
+        await index.fillSheet();
         process.exit(0);
     } catch (error) {
         console.error(error.message);
