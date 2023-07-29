@@ -1,5 +1,6 @@
 const { GoogleAuth } = require("google-auth-library")
 const { sheets } = require("@googleapis/sheets");
+require('dotenv').config();
 
 const creds = require("./creds.json");
 
@@ -13,7 +14,7 @@ const spreadsheetId = "14_qFhVEdgBLXScjCHFySI6NFZMnT3l02bKDoGhxq4ZM";
 async function getUsers() {
     const readData = await service.spreadsheets.values.get({
         spreadsheetId,
-        range: "GitHub-2!C:C",
+        range: "sdsd",
     })
 
     return readData.data.values;

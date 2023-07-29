@@ -1,0 +1,16 @@
+{
+  "gcpKey": {
+    "type": "service_account",
+    "project_id": "portfolio-389920",
+    "private_key_id": "f7aace6db2723ffc68a3ec3d5c0039af4a0ddb76",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCmreUVXMVlm7iD\nP4F2O40hUu0VRb/nnzPOvqEgyaFNe4uiyNz9sfqPN+ydQeN+ARF3ZLt+VJREiZox\nrifFCYcVzTtRUGof5W8odnSAadRyHpk8qS8yzH7Br8QEz7J4d4VWjomx6CQvCUEf\nupdRzTbx5aCECiyjO3trS8wdzOjX98uVe6ExHJ2C6oB5zuKQTgsXlDIgSNfz0RF6\n5Aac+RzFb0oaEFWoVKJpGBszOab8A/lW5tAXsNgbNdTLvhGwo606dWe6sSUcmN9x\nVkAh89/q52xgraNPIJxIreGN8VGNDjYLda8iaiKD/4ctNrmehoSXaSJ333N4IjEq\nlk2wjbrFAgMBAAECggEAFF+XwM9g0YAB7bO1f14ywgAA5WNr3EP5cSvxRgYJ/A6T\nODKVJe1l/bDi8ICSmLRIuO9Me69FmvBhiJu2VhSeuRYnn1N/pVEbZTbAHBzTevTX\n24en3UMMZgsLSrXt0AvL9eiLrCipQ5aTVJgvfDA5UcK0/Bls8LGJ7x40tO/MW5lw\n8bIygZkAAqDGtfYTAADrUHFyOoHiYl9eqUJkLr/D5v/fxePo4u75zrxiqBCUFHvR\nZkJe8SP5Vhat54pSG62sAgeAi/3LYyBrBQSOed/YXgLjBOv37BWur8o+HeSEi5GO\nwwjnRjQkJcuSwPa84xOV3khY/Xs2K/Mjk96hUF87gQKBgQDipvas29OMrBarKM8H\nhKh6XgYxtN3Za7lHxZs88Ndzf76GV1rFxQJGfdONrGOhS7m5Tgo5mCZ79iT6NcuR\nWIiz9BFfZky/lgEbsfZ9Qt4Qdd3F4iaVzdLjYo1KZNrTFXNFHItS9w/z40Dqp0UK\nWqh79LhUYjgcs5TgYUPmLmMy4wKBgQC8QvT4IckvUS2G3pEf4RUDC89dcDqwVZY4\njxJ/1e70uyxJiq/6BgKyk0snzXcKTJYT/q9s+B5OswqXJgvt6llzJhDGmU1+CiK7\nZIsckpyOavaHOYgtHrIblDOTfeHrt1MyZ9pZpCt959OkpQBpPeMIEIK5chFn7Hpp\nclPFyxjENwKBgQDa9fPe4OvJvcKUjfMbz0O4G7eeM54TWqd/N98WC5IJCcM1I5UU\n9JOTKCHFf2Isw+xjoYntRBkBrrTgaDIGc2J1fvd9k2XXvIHLkKyRLJU9j7C1aBpg\npJv0ghP/Z9mjDNj0TnQmrXni4ounZfsj2ptkTPH6y3xr9e2Aq1aeO/gngwKBgHVk\nQyDe4HbS5dKtwkzgq5uEp7+aFd6S3+NQw7ZXDnQoqssI4gbD7LaxxjGBm3Meoo7B\nR15psWxdlIL/xHyMn06ANAHC4mFvrIyxe1VLzre31xYnN9T6yRENbsPPwSqc3BIY\nVD2Fc2FFR+HoycLWRlVnBjzg9h2ZhhNuqPIzXLQtAoGAFBpTMS7E4UNdP3LXi3dM\ngENg75xiW6y0QAzF7ImguvjjXTK2MSzTMwJdAcvJNfpyDvnK+5/F+RO2O7jDriQY\nknuPZqs/F8IWceyKdYKt9cw17PGa3ZXHjlHpvwEGsX2ax2VEQ4+o/I1bkPN8GHGf\nfwLlwB8dLnJ5Hrd3X6Z3oBU=\n-----END PRIVATE KEY-----\n",
+    "client_email": "google-sheets@portfolio-389920.iam.gserviceaccount.com",
+    "client_id": "117641734443323505861",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets%40portfolio-389920.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+  },
+  "gitHubToken": "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"
+}

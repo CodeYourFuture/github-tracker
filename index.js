@@ -6,13 +6,11 @@ const dayjs = require("dayjs");
 const today = dayjs().format("YYYY-MM-DD");
 const weekAgo = dayjs().subtract(8, 'days').format("YYYY-MM-DD");
 
-async function run() {
+async function fillSpreadsheet() {
     const users = await googleSheets.getUsers();
-
-    console.log(users);
 }
 
-run();
+module.exports.fillSpreadsheet = fillSpreadsheet;
 
 // let users = [];
 // let userCount = 0;
