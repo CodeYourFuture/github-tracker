@@ -20,7 +20,6 @@ async function getCommitsSince(user, timeFrame) {
 
     if (res.ok) {
         const data = await res.json();
-        console.log(data["total_count"]);
         
         if (res.headers.get("x-ratelimit-remaining") === "0") {
             const secondsToWait = (+res.headers.get("x-ratelimit-reset") - dayjs().unix()) + 1;
