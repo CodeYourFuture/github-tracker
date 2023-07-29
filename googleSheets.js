@@ -23,7 +23,7 @@ async function getUsers() {
 async function updateCommits(commits) {
     await service.spreadsheets.values.update({
         spreadsheetId,
-        range: "GitHub!D:D",
+        range: "GitHub!D2:D",
         valueInputOption: "USER_ENTERED",
         resource: {
             values: commits
