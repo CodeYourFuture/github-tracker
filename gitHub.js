@@ -1,6 +1,5 @@
 const dayjs = require("dayjs");
-
-const creds = require("./creds.json");
+require('dotenv').config();
 
 const today = dayjs().format("YYYY-MM-DD");
 const weekAgo = dayjs().subtract(8, 'days').format("YYYY-MM-DD");
@@ -13,7 +12,7 @@ async function getCommitsSince(user, timeFrame) {
 
     const res = await fetch(url, {
         headers: {
-            'Authorization': `Bearer ${creds.gitHubToken}`,
+            'Authorization': `Bearer ${process.env.gitHubToken}`,
             'Accept': 'application/vnd.github+json',
             'X-GitHub-Api-Version': '2022-11-28'
         }
@@ -21,6 +20,7 @@ async function getCommitsSince(user, timeFrame) {
 
     if (res.ok) {
         const data = await res.json();
+        console.log(data["total_count"]);
         
         if (res.headers.get("x-ratelimit-remaining") === "0") {
             const secondsToWait = (+res.headers.get("x-ratelimit-reset") - dayjs().unix()) + 1;
