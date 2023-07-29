@@ -1,13 +1,15 @@
 const googleSheets = require("./googleSheets");
-const dayjs = require("dayjs");
-
-
-
-const today = dayjs().format("YYYY-MM-DD");
-const weekAgo = dayjs().subtract(8, 'days').format("YYYY-MM-DD");
+const gitHub = require("./gitHub");
 
 async function fillSpreadsheet() {
     const users = await googleSheets.getUsers();
+
+    const commits = [];
+    for (let user of users) {
+        commits.push(await gitHub.getCommitsSince(user[0], "one-week-ago"));
+    }
+
+    console.log(commits);
 }
 
 module.exports.fillSpreadsheet = fillSpreadsheet;

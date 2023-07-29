@@ -14,7 +14,7 @@ const spreadsheetId = "14_qFhVEdgBLXScjCHFySI6NFZMnT3l02bKDoGhxq4ZM";
 async function getUsers() {
     const readData = await service.spreadsheets.values.get({
         spreadsheetId,
-        range: "sdsd",
+        range: "GitHub-2!C2:C",
     })
 
     return readData.data.values;
