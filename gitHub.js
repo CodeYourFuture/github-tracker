@@ -4,13 +4,14 @@ require('dotenv').config();
 
 const today = dayjs().format("YYYY-MM-DD");
 const weekAgo = dayjs().subtract(8, 'days').format("YYYY-MM-DD");
+const monthAgo = dayjs().subtract(1, 'month').format("YYYY-MM-DD");
 
 async function getCommitsSince(user, currentUser, totalUsers) {
     consoleOutput(`Processing ${currentUser + 1}/${totalUsers} users...`);
 
     if (!await verifyUser(user)) return ['User does not exist.'];
 
-    return [await getWeekAgo(user)];
+    return [await getWeekAgo(user), await getFourWeekAvg(user)];
 }
 
 async function verifyUser(user) {
@@ -60,8 +61,27 @@ async function getWeekAgo(user) {
     }
 }
 
-async function getMonthAgo() {
+async function getFourWeekAvg(user) {
+    const res = await fetch(`https://api.github.com/search/commits?q=author:${user}+committer-date:${monthAgo}..${today}`, {
+        headers: {
+            'Authorization': `Bearer ${process.env.gitHubToken}`,
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
+    });
 
+    const data = await res.json();
+
+    if (res.ok) {
+        return Math.round(data["total_count"] / 4);
+    } else if (res.status === 403) {
+        await wait(+res.headers.get("x-ratelimit-reset"));
+
+        return getWeekAgo(user);
+    } else {
+        console.log("GitHub API error.");
+        process.exit(1);
+    }
 }
 
 async function wait(limitReset) {
