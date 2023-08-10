@@ -10,7 +10,7 @@ async function getCommitsSince(user, currentUser, totalUsers) {
 
     if (!await verifyUser(user)) return ['User does not exist.'];
 
-    return ['User exists.'];
+    return [await getWeekAgo(user)];
 }
 
 async function verifyUser(user) {
@@ -28,10 +28,8 @@ async function verifyUser(user) {
     if (res.ok) {
         return (data["total_count"] >= 1) ? true : false;
     } else if (res.status === 403) {
-        const secondsToWait = (+res.headers.get("x-ratelimit-reset") - dayjs().unix()) + 1;
-        consoleOutput(`Waiting ${secondsToWait} seconds...`);
-        await wait(secondsToWait);
-        
+        await wait(+res.headers.get("x-ratelimit-reset"));
+
         return verifyUser(user);
     } else {
         console.log("GitHub API error.");
@@ -39,10 +37,8 @@ async function verifyUser(user) {
     }
 }
 
-async function getWeekAgo() {
-    const url = `https://api.github.com/search/commits?q=author:${user}+committer-date:${weekAgo}..${today}`;
-
-    const res = await fetch(url, {
+async function getWeekAgo(user) {
+    const res = await fetch(`https://api.github.com/search/commits?q=author:${user}+committer-date:${weekAgo}..${today}`, {
         headers: {
             'Authorization': `Bearer ${process.env.gitHubToken}`,
             'Accept': 'application/vnd.github+json',
@@ -50,18 +46,16 @@ async function getWeekAgo() {
         }
     });
 
+    const data = await res.json();
+
     if (res.ok) {
-        const data = await res.json();
+        return data["total_count"];
+    } else if (res.status === 403) {
+        await wait(+res.headers.get("x-ratelimit-reset"));
 
-        if (res.headers.get("x-ratelimit-remaining") === "0") {
-            const secondsToWait = (+res.headers.get("x-ratelimit-reset") - dayjs().unix()) + 1;
-            await new Promise(resolve => setTimeout(resolve, secondsToWait * 1000));
-        }
-
-        return [data["total_count"]];
+        return getWeekAgo(user);
     } else {
-        const data = await res.json();
-        console.log(data.message);
+        console.log("GitHub API error.");
         process.exit(1);
     }
 }
@@ -70,7 +64,10 @@ async function getMonthAgo() {
 
 }
 
-async function wait(secondsToWait) {
+async function wait(limitReset) {
+    const secondsToWait = (limitReset - dayjs().unix()) + 1;
+    consoleOutput(`Waiting ${secondsToWait} seconds...`);
+
     return new Promise(resolve => setTimeout(resolve, secondsToWait * 1000));
 }
 
