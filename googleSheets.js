@@ -11,7 +11,7 @@ const service = sheets({ version: "v4", auth });
 async function getUsers() {
     const readData = await service.spreadsheets.values.get({
         spreadsheetId: process.env.spreadsheetId,
-        range: "GitHub!C2:C",
+        range: "GitHub-2!C2:C",
     })
 
     return readData.data.values;
@@ -20,7 +20,7 @@ async function getUsers() {
 async function updateCommits(commits) {
     await service.spreadsheets.values.update({
         spreadsheetId: process.env.spreadsheetId,
-        range: "GitHub!D2:D",
+        range: "GitHub-2!D2:D",
         valueInputOption: "USER_ENTERED",
         resource: {
             values: commits

@@ -6,7 +6,7 @@ async function fillSheet() {
 
     const commits = [];
     for (let user of users) {
-        commits.push(await gitHub.getCommitsSince(user[0], "one-week-ago"));
+        commits.push(await gitHub.getCommitsSince(user[0]));
     }
 
     await googleSheets.updateCommits(commits);
