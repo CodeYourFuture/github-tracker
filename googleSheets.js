@@ -17,16 +17,4 @@ async function getUsers() {
     return readData.data.values;
 }
 
-async function updateCommits(commits) {
-    await service.spreadsheets.values.update({
-        spreadsheetId: process.env.spreadsheetId,
-        range: "GitHub!D2:E",
-        valueInputOption: "USER_ENTERED",
-        resource: {
-            values: commits
-        },
-    });
-}
-
 module.exports.getUsers = getUsers;
-module.exports.updateCommits = updateCommits;
