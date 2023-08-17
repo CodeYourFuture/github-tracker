@@ -8,6 +8,7 @@
     "node": "^20"
   },
   "scripts": {
+    "credentials": "node credentials.js",
     "typecheck": "tsc --project ./tsconfig.build.json",
     "test": "node --test *.spec.js",
     "start": "node cli.js"
@@ -16,6 +17,7 @@
   "author": "Jonathan Sharpe <jonathan@codeyourfuture.io>",
   "license": "ISC",
   "devDependencies": {
+    "@google-cloud/local-auth": "^3.0.0",
     "@tsconfig/node18": "^18.2.0",
     "@tsconfig/node20": "^20.1.1",
     "@types/node": "^20.5.0",
