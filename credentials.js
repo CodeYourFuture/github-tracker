@@ -7,10 +7,13 @@ import { authenticate } from "@google-cloud/local-auth";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-
-const auth = await authenticate({
-	keyfilePath: join(__dirname, "credentials.json"),
-	scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-});
-
-console.log(auth.credentials);
+try {
+	const auth = await authenticate({
+		keyfilePath: join(__dirname, "credentials.json"),
+		scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+	});
+	console.log(auth.credentials);
+} catch (err) {
+	console.error(err);
+	process.exit(1);
+}
