@@ -9,8 +9,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 
 const auth = await authenticate({
-  keyfilePath: join(__dirname, "credentials.json"),
-  scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+	keyfilePath: join(__dirname, "credentials.json"),
+	scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 
 console.log(auth.credentials);

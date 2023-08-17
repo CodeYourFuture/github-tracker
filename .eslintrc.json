@@ -1,0 +1,10 @@
+{
+  "extends": "@codeyourfuture/standard",
+  "env": {
+    "es2022": true,
+    "node": true
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  }
+}
