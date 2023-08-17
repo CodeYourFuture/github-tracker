@@ -16,7 +16,7 @@ SPREADSHEET_ID=<...>
 - `GOOGLE_CREDENTIALS`: Credentials required to access the Google Sheets API (see below for details).
 - `SPREADSHEET_ID`: The spreadsheet ID is shown in the sheet URL: `https://docs.google.com/spreadsheets/d/<here>/edit#gid=0`.
 - `WORKSHEET_NAME` (default `"GitHubData"`): The worksheet where the usernames will be listed.
-- `USER_RANGE` (default `"A:A"`): The range where the usernames will be listed.
+- `USER_RANGE` (default `"A2:A"`): The range where the usernames will be listed.
 
 ### Google Sheets Credentials
 

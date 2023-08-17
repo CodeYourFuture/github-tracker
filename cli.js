@@ -12,7 +12,7 @@ const core = new Core(
 
 const sheetsConfig = {
 	spreadsheetId: process.env.SPREADSHEET_ID ?? "",
-	userRange: process.env.USER_RANGE ?? "A:A",
+	userRange: process.env.USER_RANGE ?? "A2:A",
 	worksheetName: process.env.WORKSHEET_NAME ?? "GitHubData",
 };
 
