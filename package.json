@@ -20,7 +20,6 @@
   "devDependencies": {
     "@codeyourfuture/eslint-config-standard": "^4.0.3",
     "@google-cloud/local-auth": "^3.0.0",
-    "@tsconfig/node18": "^18.2.0",
     "@tsconfig/node20": "^20.1.1",
     "@types/node": "^20.5.0",
     "eslint": "^8.47.0",
