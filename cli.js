@@ -12,7 +12,7 @@ const sheetsConfig = {
 	worksheetName: process.env.WORKSHEET_NAME ?? "GitHubData",
 };
 
-const core = Core.create(googleSheets);
+const core = new Core(googleSheets);
 
 try {
 	await core.process(sheetsConfig);

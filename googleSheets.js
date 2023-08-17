@@ -1,13 +1,5 @@
 import { auth, sheets } from "@googleapis/sheets";
 
-/**
- * @typedef {object} Configuration
- * @property {object} credentials
- * @property {string} spreadsheetId
- * @property {string} worksheetName
- * @property {string} userRange
- */
-
 export class GoogleSheets {
 	/**
    * @param {object} credentials

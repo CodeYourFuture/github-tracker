@@ -10,7 +10,7 @@
   "scripts": {
     "credentials": "node credentials.js",
     "lint": "eslint .",
-    "typecheck": "tsc --project ./tsconfig.build.json",
+    "typecheck": "tsc --project ./tsconfig.check.json",
     "test": "node --test *.spec.js",
     "start": "node cli.js"
   },
