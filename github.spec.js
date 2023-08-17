@@ -9,7 +9,7 @@ import { GitHub } from "./github.js";
 const server = setupServer();
 
 describe("GitHub", () => {
-	const github = GitHub.fromToken("fake-token");
+	const github = GitHub.fromToken("fake-token", false);
 
 	before(() => server.listen({ onUnhandledRequest: "error" }));
 
@@ -80,7 +80,51 @@ describe("GitHub", () => {
 
 		it("rejects if something else goes wrong", async () => {
 			server.use(rest.get("https://api.github.com/search/users", (req, res, ctx) => res(ctx.status(403))));
-			assert.rejects(() => github.validUsername("textbook"));
+			await assert.rejects(() => github.validUsername("textbook"));
+		});
+	});
+
+	describe("throttling", () => {
+		const throttled = GitHub.fromToken("fake-token", true);
+
+		it("retries if rate limit is hit", async () => {
+			const responses = [
+				{ json: { message: "API rate limit exceeded for user ID 123456" }, remaining: 0, status: 403 },
+				{ json: { incomplete_results: false, items: [{ id: 123, login: "textbook" }], total_count: 0 }, remaining: 100, status: 200 },
+			];
+			server.use(
+				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
+					/** @type {any} */
+					const { json, remaining, status } = responses.shift();
+					return res(
+						ctx.status(status),
+						ctx.json(json),
+						ctx.set("x-ratelimit-remaining", `${remaining}`),
+						ctx.set("x-ratelimit-reset", `${Math.floor(new Date().getTime() / 1_000) + 1}`),
+						ctx.set("x-ratelimit-used", `${30 - remaining}`),
+					);
+				}),
+			);
+
+			assert.equal(await throttled.validUsername("textbook"), true);
+		});
+
+		it("gives up after three attempts", async () => {
+			let count = 0;
+			server.use(
+				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
+					count++;
+					return res(
+						ctx.status(403),
+						ctx.json({ message: "API rate limit exceeded for user ID 123456" }),
+						ctx.set("x-ratelimit-remaining", "0"),
+						ctx.set("x-ratelimit-reset", `${Math.floor(new Date().getTime() / 1_000) + 1}`),
+						ctx.set("x-ratelimit-used", "30"),
+					);
+				}),
+			);
+			await assert.rejects(() => throttled.validUsername("textbook"));
+			assert.equal(count, 3);
 		});
 	});
 });
