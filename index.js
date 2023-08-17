@@ -1,14 +1,12 @@
-/**
- * @typedef {import("./googleSheets.js").GoogleSheets} GoogleSheets
- */
-
 export class Core {
 
 	/**
-   * @param {GoogleSheets} googleSheets
+   * @param {import("./googleSheets.js").GoogleSheets} googleSheets
+   * @param {import("./github.js").GitHub} github
    */
-	constructor(googleSheets) {
+	constructor(googleSheets, github) {
 		this.googleSheets = googleSheets;
+		this.github = github;
 	}
 
 	/**
@@ -17,8 +15,9 @@ export class Core {
    */
 	async process({ spreadsheetId, userRange, worksheetName }) {
 		const users = await this.googleSheets.getUsernames(spreadsheetId, worksheetName, userRange);
-		users.forEach((username, index) => {
-			console.log(index + 1, username);
-		});
+		for (let index = 0; index < users.length; index++) {
+			const user = users[index];
+			console.log(index + 1, user, await this.github.validUsername(user));
+		}
 	}
 }
