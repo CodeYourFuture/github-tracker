@@ -28,6 +28,19 @@ export class GitHub {
 
 	/**
 	 * @param {string} username
+	 * @param {Date} start
+	 * @param {Date} end
+	 * @returns {Promise<number>}
+	 */
+	async commitsBetween(username, start, end) {
+		const { data: { total_count } } = await this.service.search.commits({
+			q: `author:${username} author-date:${this._toISODate(start)}..${this._toISODate(end)}`,
+		});
+		return total_count;
+	}
+
+	/**
+	 * @param {string} username
 	 * @returns {Promise<boolean>}
 	 */
 	async validUsername(username) {
@@ -40,6 +53,14 @@ export class GitHub {
 			}
 			throw err;
 		}
+	}
+
+	/**
+	 * @param {Date} date
+	 * @returns {string}
+	 */
+	_toISODate(date) {
+		return date.toISOString().slice(0, 10);
 	}
 }
 

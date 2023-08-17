@@ -17,6 +17,34 @@ describe("GitHub", () => {
 
 	after(() => server.close());
 
+	describe("commitsBetween", () => {
+		it("makes authenticated request with correct query", async () => {
+			let headers, query;
+			server.use(
+				rest.get("https://api.github.com/search/commits", (req, res, ctx) => {
+					headers = Object.fromEntries(req.headers.entries());
+					query = Object.fromEntries(req.url.searchParams.entries());
+					return res(ctx.json({ total_count: 0, incomplete_results: false, items: [] }));
+				}),
+			);
+
+			await github.commitsBetween("textbook", new Date(2023, 4, 5, 12), new Date(2023, 4, 12, 12));
+
+			assert.equal(query.q, "author:textbook author-date:2023-05-05..2023-05-12");
+			assert.equal(headers.authorization, "token fake-token");
+		});
+
+		it("resolves to the total count", async () => {
+			server.use(
+				rest.get("https://api.github.com/search/commits", (req, res, ctx) => {
+					return res(ctx.json({ total_count: 123, incomplete_results: false, items: [] }));
+				}),
+			);
+
+			assert.equal(await github.commitsBetween("textbook", new Date(2023, 4, 5, 12), new Date(2023, 4, 12, 12)), 123);
+		});
+	});
+
 	describe("validUsername", () => {
 		it("makes authenticated request with correct query", async () => {
 			let headers, query;
