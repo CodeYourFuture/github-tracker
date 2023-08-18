@@ -6,5 +6,18 @@
   },
   "parserOptions": {
     "sourceType": "module"
+  },
+  "plugins": [
+    "import"
+  ],
+  "rules": {
+    "import/order": [
+      "error",
+      {
+              "alphabetize": { "caseInsensitive": true, "order": "asc" },
+              "groups": ["builtin", "external", "parent", ["sibling", "index"]],
+              "newlines-between": "always"
+      }
+    ]
   }
 }
