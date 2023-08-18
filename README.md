@@ -14,6 +14,7 @@ SPREADSHEET_ID=<...>
 
 - `COMMIT_RANGE` (default `"B2:B"`): The range where the commits will be written.
 - `GITHUB_TOKEN`: Create a [GitHub personal access token]
+    - **Note**: this is provided automatically in GitHub Actions
 - `GOOGLE_CREDENTIALS`: Credentials required to access the Google Sheets API (see below for details).
 - `SPREADSHEET_ID`: The spreadsheet ID is shown in the sheet URL: `https://docs.google.com/spreadsheets/d/<here>/edit#gid=0`.
 - `WORKSHEET_NAME` (default `"GitHubData"`): The worksheet where the usernames will be listed.
