@@ -44,9 +44,10 @@ export class GitHub {
 	 * @returns {Promise<boolean>}
 	 */
 	async validUsername(username) {
+		const canonical = username.toLowerCase();
 		try {
-			const { data: { items } } = await this.service.search.users({ q: `user:${username}` });
-			return items.find(({ login }) => login === username) !== undefined;
+			const { data: { items } } = await this.service.search.users({ q: `user:${canonical}` });
+			return items.find(({ login }) => login.toLowerCase() === canonical) !== undefined;
 		} catch (/** @type {any} */err) {
 			if (err.status === 422) {
 				return false;
