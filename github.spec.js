@@ -88,6 +88,14 @@ describe("GitHub", () => {
 			assert.equal(await github.validUsername("textbook"), false);
 		});
 
+		it("accepts case-insensitive matches", async () => {
+			server.use(rest.get("https://api.github.com/search/users", (req, res, ctx) => res(ctx.json(envelope([
+				{ id: 123, login: "tExTbOOk" },
+			])))));
+
+			assert.equal(await github.validUsername("textbook"), true);
+		});
+
 		it("resolves false if search responds 422", async () => {
 			server.use(
 				rest.get("https://api.github.com/search/users", (req, res, ctx) => {

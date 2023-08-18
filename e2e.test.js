@@ -52,6 +52,30 @@ describe("GitHub Tracker", () => {
 		});
 	});
 
+	it("works with inconsistent casing", async () => {
+		const title = await createSheet([
+			["GitHub ID", "Commits last week"],
+			["tExTbOoK"],
+			["Haroon-Ali-DEV"],
+			["MOMAHBOOBIAN"],
+			["lorenacapraru"],
+		]);
+
+		await runScript({ END_DATE: "2023-06-18", WORKSHEET_NAME: title });
+
+		const { data: { values } } = await sheetsClient.spreadsheets.values.get({
+			range: `${title}!A2:B`,
+			spreadsheetId,
+		});
+		const commitCounts = Object.fromEntries(values);
+		assert.deepEqual(commitCounts, {
+			"Haroon-Ali-DEV": "96",
+			lorenacapraru: "2",
+			MOMAHBOOBIAN: "3",
+			tExTbOoK: "1",
+		});
+	});
+
 	/**
 	 * @param {string[][]} values
 	 * @returns {Promise<string>}
