@@ -4,6 +4,7 @@
     "strict": true
   },
   "exclude": [
-    "*.spec.js"
+    "*.spec.js",
+    "*.test.js"
   ]
 }
