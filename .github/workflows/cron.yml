@@ -10,6 +10,12 @@ jobs:
   run:
     environment: production
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - commitRange: "N3:N"
+            userRange: "M3:M"
+            worksheetName: "Cape Town"
     steps:
       - uses: "actions/checkout@v3"
       - uses: "actions/setup-node@v3"
@@ -19,9 +25,9 @@ jobs:
       - run: npm ci --omit dev
       - run: npm start
         env:
-          COMMIT_RANGE: ${{ vars.COMMIT_RANGE }}
+          COMMIT_RANGE: ${{ matrix.commitRange }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
-          USER_RANGE: ${{ vars.USER_RANGE }}
-          WORKSHEET_NAME: ${{ vars.WORKSHEET_NAME }}
+          USER_RANGE: ${{ matrix.userRange }}
+          WORKSHEET_NAME: ${{ matrix.worksheetName }}
