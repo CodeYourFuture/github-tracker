@@ -27,8 +27,24 @@ export class GoogleSheets {
 	async getUsernames(spreadsheetId, worksheetName, userRange) {
 		const { data } = await this.service.spreadsheets.values.get({
 			range: `${worksheetName}!${userRange}`,
-			spreadsheetId: spreadsheetId,
+			spreadsheetId,
 		});
 		return data?.values?.map(([username]) => username) ?? [];
+	}
+
+	/**
+	 * @param {string} spreadsheetId
+	 * @param {string} worksheetName
+	 * @param {string} commitRange
+	 * @param {number[]} data
+	 * @returns {Promise<void>}
+	 */
+	async updateCommits(spreadsheetId, worksheetName, commitRange, data) {
+		await this.service.spreadsheets.values.update({
+			range: `${worksheetName}!${commitRange}`,
+			requestBody: { values: data.map((value) => [isNaN(value) ? "#N/A" : value]) },
+			spreadsheetId,
+			valueInputOption: "USER_ENTERED",
+		});
 	}
 }

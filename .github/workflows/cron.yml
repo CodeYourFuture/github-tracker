@@ -21,5 +21,6 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+          COMMIT_RANGE: ${{ vars.COMMIT_RANGE }}
           USER_RANGE: ${{ vars.USER_RANGE }}
           WORKSHEET_NAME: ${{ vars.WORKSHEET_NAME }}

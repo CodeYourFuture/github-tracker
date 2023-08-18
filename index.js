@@ -10,23 +10,31 @@ export class Core {
 	}
 
 	/**
-   * @param {{ spreadsheetId: string, userRange: string, worksheetName: string }} config
-   * @returns {Promise<void>}
+   * @param {{ commitRange: string, spreadsheetId: string, userRange: string, worksheetName: string }} config
+	 * @param {(message?: any, ...args: any[]) => void} log
+   * @returns {Promise<{ lastWeekCommits: number, username: string }[]>}
    */
-	async process({ spreadsheetId, userRange, worksheetName }) {
+	async process({ commitRange, spreadsheetId, userRange, worksheetName }, log = console.log) {
 		const oneWeekAgo = this._daysAgo(7);
 		const today = this._today();
 
 		const users = await this.googleSheets.getUsernames(spreadsheetId, worksheetName, userRange);
+		/** @type {number[]} */
+		const lastWeekCommits = [];
 
 		for (let index = 0; index < users.length; index++) {
 			const username = users[index];
-			const isUser = await this.github.validUsername(username);
-			const lastWeekCommits = isUser
-				? await this.github.commitsBetween(username, oneWeekAgo, today)
-				: NaN;
-			console.log(index + 1, username, isUser, lastWeekCommits);
+			log("Processing %d / %d", index + 1, users.length);
+			if (!await this.github.validUsername(username)) {
+				lastWeekCommits.push(NaN);
+			} else {
+				lastWeekCommits.push(await this.github.commitsBetween(username, oneWeekAgo, today));
+			}
 		}
+
+		await this.googleSheets.updateCommits(spreadsheetId, worksheetName, commitRange, lastWeekCommits);
+
+		return users.map((username, index) => ({ username, lastWeekCommits: lastWeekCommits[index] }));
 	}
 
 	/**
