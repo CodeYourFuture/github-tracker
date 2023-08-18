@@ -1,0 +1,4 @@
+# See GitHub docs for details on the syntax and semantics of CODEOWNERS:
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+* @CodeYourFuture/github-tracker

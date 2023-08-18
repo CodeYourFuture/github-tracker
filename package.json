@@ -1,7 +1,7 @@
 {
-  "name": "@codeyourfuture/github-sheets",
+  "name": "@codeyourfuture/github-tracker",
   "version": "0.1.0",
-  "description": "",
+  "description": "GitHub APIs and Google Sheets, together at last",
   "type": "module",
   "main": "index.js",
   "engines": {
@@ -16,6 +16,15 @@
   },
   "keywords": [],
   "author": "Jonathan Sharpe <jonathan@codeyourfuture.io>",
+  "contributors": [
+    { "name": "Haroon Ali", "url": "https://github.com/haroon-ali-dev/" },
+    { "name": "Lorena Capraru", "url": "https://github.com/LorenaCapraru" },
+    { "name": "Mo Mahboobian", "url": "https://github.com/momahboobian" }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CodeYourFuture/github-tracker.git"
+  },
   "license": "ISC",
   "devDependencies": {
     "@codeyourfuture/eslint-config-standard": "^4.0.3",
