@@ -1,3 +1,4 @@
+import { graphql } from "@octokit/graphql";
 import { throttling } from "@octokit/plugin-throttling";
 import { Octokit } from "@octokit/rest";
 
@@ -9,21 +10,34 @@ export class GitHub {
 	 * @returns {GitHub}
 	 */
 	static fromToken(auth, throttled = true) {
-		return new GitHub(new (Octokit.plugin(throttling))({
-			auth,
-			throttle: {
-				enabled: throttled,
-				onRateLimit: retry(3),
-				onSecondaryRateLimit: retry(3),
-			},
-		}));
+		return new GitHub(
+			new (Octokit.plugin(throttling))({
+				auth,
+				throttle: { enabled: throttled, onRateLimit: retry(3), onSecondaryRateLimit: retry(3) },
+			}),
+			graphql.defaults({ headers: { Authorization: `token ${auth}` } }),
+		);
 	}
 
+	static USER_QUERY = `
+		query GetUsers($q: String!) {
+			search(first: 1, query: $q, type: USER) {
+				nodes {
+					...on User {
+						login
+					}
+				}
+			}
+		}
+	`;
+
 	/**
-	 * @param {Octokit} service
+	 * @param {Octokit} rest
+	 * @param {graphql} gql
 	 */
-	constructor(service) {
-		this.service = service;
+	constructor(rest, gql) {
+		this.rest = rest;
+		this.gql = gql;
 	}
 
 	/**
@@ -33,7 +47,7 @@ export class GitHub {
 	 * @returns {Promise<number>}
 	 */
 	async commitsBetween(username, start, end) {
-		const { data: { total_count } } = await this.service.search.commits({
+		const { data: { total_count } } = await this.rest.search.commits({
 			q: `author:${username} author-date:${this._toISODate(start)}..${this._toISODate(end)}`,
 		});
 		return total_count;
@@ -45,15 +59,12 @@ export class GitHub {
 	 */
 	async validUsername(username) {
 		const canonical = username.toLowerCase();
-		try {
-			const { data: { items } } = await this.service.search.users({ q: `user:${canonical}` });
-			return items.find(({ login }) => login.toLowerCase() === canonical) !== undefined;
-		} catch (/** @type {any} */err) {
-			if (err.status === 422) {
-				return false;
-			}
-			throw err;
-		}
+		/** @type {{ search: { nodes: { login: string }[] } }} */
+		const { search: { nodes: items } } = await this.gql({
+			q: `user:${canonical}`,
+			query: GitHub.USER_QUERY,
+		});
+		return items.find(({ login }) => login.toLowerCase() === canonical) !== undefined;
 	}
 
 	/**

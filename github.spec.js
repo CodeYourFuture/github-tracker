@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { after, before, beforeEach, describe, it } from "node:test";
 
-import { rest } from "msw";
+import { graphql, rest } from "msw";
 import { setupServer } from "msw/node";
 
 import { GitHub } from "./github.js";
@@ -49,10 +49,10 @@ describe("GitHub", () => {
 		it("makes authenticated request with correct query", async () => {
 			let headers, query;
 			server.use(
-				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
+				graphql.query("GetUsers", (req, res, ctx) => {
+					query = req.variables;
 					headers = Object.fromEntries(req.headers.entries());
-					query = Object.fromEntries(req.url.searchParams.entries());
-					return res(ctx.json(envelope([])));
+					return res(ctx.data({ search: { nodes: [] } }));
 				}),
 			);
 
@@ -64,10 +64,8 @@ describe("GitHub", () => {
 
 		it("resolves true if username is found in search", async () => {
 			server.use(
-				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
-					return res(ctx.json(envelope([
-						{ id: 123, login: "textbook" },
-					])));
+				graphql.query("GetUsers", (req, res, ctx) => {
+					return res(ctx.data({ search: { nodes: [{ login: "textbook" }] } }));
 				}),
 			);
 
@@ -76,12 +74,8 @@ describe("GitHub", () => {
 
 		it("resolves false if username is not found in search", async () => {
 			server.use(
-				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
-					return res(ctx.json(envelope([
-						{ id: 123, login: "foo" },
-						{ id: 456, login: "bar" },
-						{ id: 789, login: "baz" },
-					])));
+				graphql.query("GetUsers", (req, res, ctx) => {
+					return res(ctx.data({ search: { nodes: [{ login: "foo" }, { login: "bar" }, { login: "baz" }] } }));
 				}),
 			);
 
@@ -89,39 +83,35 @@ describe("GitHub", () => {
 		});
 
 		it("accepts case-insensitive matches", async () => {
-			server.use(rest.get("https://api.github.com/search/users", (req, res, ctx) => res(ctx.json(envelope([
-				{ id: 123, login: "tExTbOOk" },
-			])))));
+			server.use(
+				graphql.query("GetUsers", (req, res, ctx) => {
+					return res(ctx.data({ search: { nodes: [{ login: "tExTbOoK" }] } }));
+				}),
+			);
 
 			assert.equal(await github.validUsername("textbook"), true);
 		});
 
-		it("resolves false if search responds 422", async () => {
+		it("rejects if something else goes wrong", async () => {
 			server.use(
-				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
-					return res(ctx.status(422), ctx.json({ message: "Validation Failed" }));
+				rest.post("https://api.github.com/graphql", (req, res, ctx) => {
+					return res(ctx.status(401), ctx.json({ message: "This endpoint requires you to be authenticated." }));
 				}),
 			);
-
-			assert.equal(await github.validUsername("textbook"), false);
-		});
-
-		it("rejects if something else goes wrong", async () => {
-			server.use(rest.get("https://api.github.com/search/users", (req, res, ctx) => res(ctx.status(403))));
 			await assert.rejects(() => github.validUsername("textbook"));
 		});
 	});
 
-	describe("throttling", () => {
+	describe("REST throttling", () => {
 		const throttled = GitHub.fromToken("fake-token", true);
 
-		it("retries if rate limit is hit", async () => {
+		it("retries requests if rate limit is hit", async () => {
 			const responses = [
 				{ json: { message: "API rate limit exceeded for user ID 123456" }, remaining: 0, status: 403 },
-				{ json: envelope([{ id: 123, login: "textbook" }]), remaining: 100, status: 200 },
+				{ json: envelope([{}, {}, {}]), remaining: 100, status: 200 },
 			];
 			server.use(
-				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
+				rest.get("https://api.github.com/search/commits", (req, res, ctx) => {
 					/** @type {any} */
 					const { json, remaining, status } = responses.shift();
 					return res(
@@ -134,13 +124,13 @@ describe("GitHub", () => {
 				}),
 			);
 
-			assert.equal(await throttled.validUsername("textbook"), true);
+			assert.equal(await throttled.commitsBetween("textbook", new Date(), new Date()), 3);
 		});
 
 		it("gives up after three attempts", async () => {
 			let count = 0;
 			server.use(
-				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
+				rest.get("https://api.github.com/search/commits", (req, res, ctx) => {
 					count++;
 					return res(
 						ctx.status(403),
@@ -151,7 +141,7 @@ describe("GitHub", () => {
 					);
 				}),
 			);
-			await assert.rejects(() => throttled.validUsername("textbook"));
+			await assert.rejects(() => throttled.commitsBetween("textbook", new Date(), new Date()));
 			assert.equal(count, 3);
 		});
 	});
