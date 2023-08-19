@@ -1,6 +1,5 @@
-import { graphql } from "@octokit/graphql";
+import { Octokit } from "@octokit/core";
 import { throttling } from "@octokit/plugin-throttling";
-import { Octokit } from "@octokit/rest";
 
 export class GitHub {
 
@@ -10,13 +9,14 @@ export class GitHub {
 	 * @returns {GitHub}
 	 */
 	static fromToken(auth, throttled = true) {
-		return new GitHub(
-			new (Octokit.plugin(throttling))({
-				auth,
-				throttle: { enabled: throttled, onRateLimit: retry(3), onSecondaryRateLimit: retry(3) },
-			}),
-			graphql.defaults({ headers: { Authorization: `token ${auth}` } }),
-		);
+		return new GitHub(new (Octokit.plugin(throttling))({
+			auth,
+			throttle: {
+				enabled: throttled,
+				onRateLimit: retry(3),
+				onSecondaryRateLimit: retry(3),
+			},
+		}));
 	}
 
 	static USER_QUERY = `
@@ -32,12 +32,10 @@ export class GitHub {
 	`;
 
 	/**
-	 * @param {Octokit} rest
-	 * @param {graphql} gql
+	 * @param {Octokit} service
 	 */
-	constructor(rest, gql) {
-		this.rest = rest;
-		this.gql = gql;
+	constructor(service) {
+		this.service = service;
 	}
 
 	/**
@@ -47,7 +45,7 @@ export class GitHub {
 	 * @returns {Promise<number>}
 	 */
 	async commitsBetween(username, start, end) {
-		const { data: { total_count } } = await this.rest.search.commits({
+		const { data: { total_count } } = await this.service.request("GET /search/commits", {
 			q: `author:${username} author-date:${this._toISODate(start)}..${this._toISODate(end)}`,
 		});
 		return total_count;
@@ -60,7 +58,7 @@ export class GitHub {
 	async validUsername(username) {
 		const canonical = username.toLowerCase();
 		/** @type {{ search: { nodes: { login: string }[] } }} */
-		const { search: { nodes: items } } = await this.gql({
+		const { search: { nodes: items } } = await this.service.graphql({
 			q: `user:${canonical}`,
 			query: GitHub.USER_QUERY,
 		});

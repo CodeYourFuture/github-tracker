@@ -50,8 +50,8 @@ describe("GitHub", () => {
 			let headers, query;
 			server.use(
 				graphql.query("GetUsers", (req, res, ctx) => {
-					query = req.variables;
 					headers = Object.fromEntries(req.headers.entries());
+					query = req.variables;
 					return res(ctx.data({ search: { nodes: [] } }));
 				}),
 			);
@@ -102,7 +102,7 @@ describe("GitHub", () => {
 		});
 	});
 
-	describe("REST throttling", () => {
+	describe("throttling", () => {
 		const throttled = GitHub.fromToken("fake-token", true);
 
 		it("retries requests if rate limit is hit", async () => {
@@ -143,6 +143,27 @@ describe("GitHub", () => {
 			);
 			await assert.rejects(() => throttled.commitsBetween("textbook", new Date(), new Date()));
 			assert.equal(count, 3);
+		});
+
+		it("applies to GraphQL queries", async () => {
+			let count = 0;
+			const responses = [
+				{ type: "RATE_LIMITED" },
+				{ search: { nodes: [{ login: "textbook" }] } },
+			];
+			server.use(
+				graphql.query("GetUsers", (req, res, ctx) => {
+					count++;
+					const response = responses.shift();
+					if (response.type) {
+						return res(ctx.errors([response]), ctx.set("x-ratelimit-remaining", "0"));
+					}
+					return res(ctx.data(response));
+				}),
+			);
+
+			assert.equal(await throttled.validUsername("textbook"), true);
+			assert.equal(count, 2);
 		});
 	});
 
