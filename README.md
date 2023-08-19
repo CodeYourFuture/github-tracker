@@ -19,18 +19,22 @@ Additionally, for testing purposes:
 
 ## Production setup
 
-- Generate a project, OAuth app and `credentials.json` file as described in the [Google Developer docs]. This file will include the `client_id` and `client_secret` required above.
+It's assumed that the spreadsheet(s) to use will already exist, so we need to use the broader `"https://www.googleapis.com/auth/spreadsheets"` scope (which grants access to _all_ spreadsheets in the account) in production.
+
+- Generate a project, OAuth app and `credentials.json` file as described in the [Google Developer docs].
 - Run `npm run setup -- --credentials` to generate the appropriate credentials
 - Set the `SPREADSHEET_ID`, `COMMIT_RANGE` and `USER_RANGE` as needed.
 
 ## Dev setup
+
+For development purposes we can use the narrower `"https://www.googleapis.com/auth/drive.file"` scope, which only grants access to files the app has created, and automatically create the E2E test file.
 
 - Clone the repo and run `npm ci` to install the dependencies.
 - Create a [GitHub personal access token] and create a `.env` file containing it:
     ```bash
     GITHUB_TOKEN=<...>
     ```
-- Generate a project, OAuth app and `credentials.json` file as described in the [Google Developer docs]. This file will include the `client_id` and `client_secret` required above.
+- Generate a project, OAuth app and `credentials.json` file as described in the [Google Developer docs].
 - Use `npm run dev` to generate the appropriate credentials and create a test spreadsheet for you. This will output data to add to your `.env` file.
 - Use `npm run ship` to ensure that the linting, type checks and tests pass.
 
