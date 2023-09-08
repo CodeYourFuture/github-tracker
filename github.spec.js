@@ -24,7 +24,7 @@ describe("GitHub", () => {
 				rest.get("https://api.github.com/search/commits", (req, res, ctx) => {
 					headers = Object.fromEntries(req.headers.entries());
 					query = Object.fromEntries(req.url.searchParams.entries());
-					return res(ctx.json({ total_count: 0, incomplete_results: false, items: [] }));
+					return res(ctx.json(envelope([])));
 				}),
 			);
 
@@ -41,7 +41,7 @@ describe("GitHub", () => {
 				}),
 			);
 
-			assert.equal(await github.commitsBetween("textbook", new Date(2023, 4, 5, 12), new Date(2023, 4, 12, 12)), 123);
+			assert.equal(await github.commitsBetween("textbook", new Date(), new Date()), 123);
 		});
 	});
 
@@ -52,7 +52,7 @@ describe("GitHub", () => {
 				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
 					headers = Object.fromEntries(req.headers.entries());
 					query = Object.fromEntries(req.url.searchParams.entries());
-					return res(ctx.json({ total_count: 0, incomplete_results: false, items: [] }));
+					return res(ctx.json(envelope([])));
 				}),
 			);
 
@@ -65,13 +65,9 @@ describe("GitHub", () => {
 		it("resolves true if username is found in search", async () => {
 			server.use(
 				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
-					return res(ctx.json({
-						total_count: 1,
-						incomplete_results: false,
-						items: [
-							{ id: 123, login: "textbook" },
-						],
-					}));
+					return res(ctx.json(envelope([
+						{ id: 123, login: "textbook" },
+					])));
 				}),
 			);
 
@@ -81,19 +77,23 @@ describe("GitHub", () => {
 		it("resolves false if username is not found in search", async () => {
 			server.use(
 				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
-					return res(ctx.json({
-						total_count: 1,
-						incomplete_results: false,
-						items: [
-							{ id: 123, login: "foo" },
-							{ id: 456, login: "bar" },
-							{ id: 789, login: "baz" },
-						],
-					}));
+					return res(ctx.json(envelope([
+						{ id: 123, login: "foo" },
+						{ id: 456, login: "bar" },
+						{ id: 789, login: "baz" },
+					])));
 				}),
 			);
 
 			assert.equal(await github.validUsername("textbook"), false);
+		});
+
+		it("accepts case-insensitive matches", async () => {
+			server.use(rest.get("https://api.github.com/search/users", (req, res, ctx) => res(ctx.json(envelope([
+				{ id: 123, login: "tExTbOOk" },
+			])))));
+
+			assert.equal(await github.validUsername("textbook"), true);
 		});
 
 		it("resolves false if search responds 422", async () => {
@@ -118,7 +118,7 @@ describe("GitHub", () => {
 		it("retries if rate limit is hit", async () => {
 			const responses = [
 				{ json: { message: "API rate limit exceeded for user ID 123456" }, remaining: 0, status: 403 },
-				{ json: { incomplete_results: false, items: [{ id: 123, login: "textbook" }], total_count: 0 }, remaining: 100, status: 200 },
+				{ json: envelope([{ id: 123, login: "textbook" }]), remaining: 100, status: 200 },
 			];
 			server.use(
 				rest.get("https://api.github.com/search/users", (req, res, ctx) => {
@@ -155,4 +155,12 @@ describe("GitHub", () => {
 			assert.equal(count, 3);
 		});
 	});
+
+	function envelope(items) {
+		return {
+			items,
+			total_count: items.length,
+			incomplete_results: false,
+		};
+	}
 });
