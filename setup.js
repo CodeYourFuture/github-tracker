@@ -23,7 +23,6 @@ const { values } = parseArgs({
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const credentialsFile = join(__dirname, values.file ?? "credentials.json");
-const sheetTitle = "E2E Template";
 
 try {
 	if (values.credentials) {
@@ -38,16 +37,13 @@ try {
 
 	const credentials = await getCredentials(credentialsFile, "https://www.googleapis.com/auth/drive.file");
 	const client = createAuthenticatedClient(credentials);
-	const sheet = await createSheet(client, "CYF GitHub Tracker E2E Testing", sheetTitle);
-	const { properties: { sheetId } = {} } = getSheet(sheet.sheets ?? [], sheetTitle);
-	await populateSheet(client, sheet.spreadsheetId ?? "", sheetTitle);
+	const { spreadsheetId, spreadsheetUrl } = await createSheet(client, "CYF GitHub Tracker E2E Testing");
 	console.log("Add the following to your .env file:");
 	console.log("====================");
-	console.log(`E2E_TEMPLATE=${sheetId}`);
 	console.log(`GOOGLE_CREDENTIALS=${JSON.stringify(credentials)}`);
-	console.log(`SPREADSHEET_ID=${sheet.spreadsheetId}`);
+	console.log(`SPREADSHEET_ID=${spreadsheetId}`);
 	console.log("====================");
-	console.log("Spreadsheet URL:", sheet.spreadsheetUrl);
+	console.log("Spreadsheet URL:", spreadsheetUrl);
 } catch (err) {
 	console.error(err);
 	process.exit(1);
@@ -66,22 +62,14 @@ function createAuthenticatedClient(credentials) {
 /**
  * @param {Sheets} client
  * @param {string} title
- * @param {string} sheetTitle
  * @returns {Promise<Spreadsheet>}
  */
-async function createSheet(client, title, sheetTitle) {
+async function createSheet(client, title) {
 	const { data: sheet } = await client.spreadsheets.create({
 		requestBody: {
 			properties: {
 				title,
 			},
-			sheets: [
-				{
-					properties: {
-						title: sheetTitle,
-					},
-				},
-			],
 		},
 	});
 	return sheet;
@@ -96,42 +84,4 @@ async function getCredentials(keyfilePath, scope) {
 	const { installed: { client_id, client_secret } } = JSON.parse(await readFile(keyfilePath, "utf-8"));
 	const { credentials: { refresh_token } } = await authenticate({ keyfilePath, scopes: [scope] });
 	return { client_id, client_secret, refresh_token, type: "authorized_user" };
-}
-
-/**
- * @param {Sheet[]} sheets
- * @param {string} sheetTitle
- * @returns {Sheet}
- */
-function getSheet(sheets, sheetTitle) {
-	const sheet = sheets.find(({ properties }) => properties?.title === sheetTitle);
-	if (!sheet) {
-		throw new Error(`Sheet ${sheetTitle} not created`);
-	}
-	return sheet;
-}
-
-/**
- * @param {Sheets} client
- * @param {string} spreadsheetId
- * @param {string} sheetTitle
- * @returns {Promise<void>}
- */
-async function populateSheet(client, spreadsheetId, sheetTitle) {
-	await client.spreadsheets.values.update({
-		spreadsheetId: spreadsheetId,
-		range: `${sheetTitle}!A:B`,
-		requestBody: {
-			values: [
-				["GitHub ID", "Commits last week"],
-				["textbook"],
-				["haroon-ali-dev"],
-				["definitely-does-not-exist-as-a-user-1"],
-				["definitely-does-not-exist-as-a-user-2"],
-				["momahboobian"],
-				["LorenaCapraru"],
-			],
-		},
-		valueInputOption: "USER_ENTERED",
-	});
 }

@@ -7,16 +7,12 @@ GitHub APIs and Google Sheets, together at last.
 The following environment variables are used:
 
 - `COMMIT_RANGE` (default `"B2:B"`): The range where the commits will be written.
+- `END_DATE`: Override the end date for the commit analysis (must be an ISO 8601 format string, e.g. `"2021-02-03"`).
 - `GITHUB_TOKEN`: Token for accessing the GitHub APIs.
 - `GOOGLE_CREDENTIALS`: Credentials required to access the Google Sheets API.
 - `SPREADSHEET_ID`: The spreadsheet ID is shown in the sheet URL: `https://docs.google.com/spreadsheets/d/<here>/edit#gid=0`.
 - `WORKSHEET_NAME` (default `"GitHubData"`): The worksheet where the usernames will be listed.
 - `USER_RANGE` (default `"A2:A"`): The range where the usernames will be listed.
-
-Additionally, for testing purposes:
-
-- `E2E_TEMPLATE`: Sheet ID of the template to use for the end-to-end test.
-- `END_DATE`: Override the end date for the commit analysis (must be an ISO 8601 format string, e.g. `"2021-02-03"`.
 
 ## Production setup
 
@@ -36,7 +32,7 @@ For development purposes we can use the narrower `"https://www.googleapis.com/au
     GITHUB_TOKEN=<...>
     ```
 - Generate a project, OAuth app and `credentials.json` file as described in the [Google Developer docs].
-- Use `npm run dev` to generate the appropriate credentials and create a test spreadsheet for you. This will output data to add to your `.env` file.
+- Use `npm run setup` to generate the appropriate credentials and create a test spreadsheet for you. This will output data to add to your `.env` file.
 - Use `npm run ship` to ensure that the linting, type checks and tests pass.
 
 [github personal access token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
