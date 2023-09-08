@@ -26,6 +26,7 @@ jobs:
           - commitRange: "M3:M"
             userRange: "L3:L"
             worksheetName: "West Midlands"
+    name: "Weekly update: ${{ matrix.worksheetName }}"
     steps:
       - uses: "actions/checkout@v3"
       - uses: "actions/setup-node@v3"
