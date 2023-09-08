@@ -15,8 +15,8 @@ export class Core {
    * @returns {Promise<{ lastWeekCommits: number, username: string }[]>}
    */
 	async process({ commitRange, spreadsheetId, userRange, worksheetName }, log = console.log) {
-		const oneWeekAgo = this._daysAgo(7);
 		const today = this._today();
+		const oneWeekAgo = this._daysAgo(today, 7);
 
 		const users = await this.googleSheets.getUsernames(spreadsheetId, worksheetName, userRange);
 		/** @type {number[]} */
@@ -38,11 +38,12 @@ export class Core {
 	}
 
 	/**
+	 * @param {Date} from
 	 * @param {number} days
 	 * @returns {Date}
 	 */
-	_daysAgo(days) {
-		const date = this._today();
+	_daysAgo(from, days) {
+		const date = new Date(from);
 		date.setDate(date.getDate() - days);
 		return date;
 	}
