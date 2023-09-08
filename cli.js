@@ -27,6 +27,7 @@ const debug = process.env.LOG_LEVEL?.toUpperCase() === "DEBUG";
 
 const sheetsConfig = {
 	commitRange: process.env.COMMIT_RANGE ?? "B2:B",
+	end: process.env.END_DATE !== undefined ? new Date(process.env.END_DATE) : undefined,
 	spreadsheetId: process.env.SPREADSHEET_ID ?? "",
 	userRange: process.env.USER_RANGE ?? "A2:A",
 	worksheetName: process.env.WORKSHEET_NAME ?? "GitHubData",

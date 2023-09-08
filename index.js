@@ -10,13 +10,13 @@ export class Core {
 	}
 
 	/**
-   * @param {{ commitRange: string, spreadsheetId: string, userRange: string, worksheetName: string }} config
+   * @param {{ commitRange: string, end?: Date, spreadsheetId: string, userRange: string, worksheetName: string }} config
 	 * @param {(message?: any, ...args: any[]) => void} log
    * @returns {Promise<{ lastWeekCommits: number, username: string }[]>}
    */
-	async process({ commitRange, spreadsheetId, userRange, worksheetName }, log = console.log) {
-		const oneWeekAgo = this._daysAgo(7);
-		const today = this._today();
+	async process({ commitRange, end, spreadsheetId, userRange, worksheetName }, log = console.log) {
+		const upTo = end ?? this._today();
+		const oneWeekPrior = this._daysAgo(upTo, 7);
 
 		const users = await this.googleSheets.getUsernames(spreadsheetId, worksheetName, userRange);
 		/** @type {number[]} */
@@ -28,7 +28,7 @@ export class Core {
 			if (!await this.github.validUsername(username)) {
 				lastWeekCommits.push(NaN);
 			} else {
-				lastWeekCommits.push(await this.github.commitsBetween(username, oneWeekAgo, today));
+				lastWeekCommits.push(await this.github.commitsBetween(username, oneWeekPrior, upTo));
 			}
 		}
 
@@ -38,11 +38,12 @@ export class Core {
 	}
 
 	/**
+	 * @param {Date} from
 	 * @param {number} days
 	 * @returns {Date}
 	 */
-	_daysAgo(days) {
-		const date = this._today();
+	_daysAgo(from, days) {
+		const date = new Date(from);
 		date.setDate(date.getDate() - days);
 		return date;
 	}
