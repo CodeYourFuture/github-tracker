@@ -32,7 +32,6 @@ jobs:
       - run: npm ci
       - run: npm run e2e
         env:
-          E2E_TEMPLATE: ${{ vars.E2E_TEMPLATE }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
