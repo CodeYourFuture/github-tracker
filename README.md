@@ -16,6 +16,7 @@ The following environment variables are used:
 Additionally, for testing purposes:
 
 - `E2E_TEMPLATE`: Sheet ID of the template to use for the end-to-end test.
+- `END_DATE`: Override the end date for the commit analysis (must be an ISO 8601 format string, e.g. `"2021-02-03"`.
 
 ## Production setup
 
