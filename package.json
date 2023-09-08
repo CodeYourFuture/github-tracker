@@ -19,9 +19,18 @@
   "keywords": [],
   "author": "Jonathan Sharpe <jonathan@codeyourfuture.io>",
   "contributors": [
-    { "name": "Haroon Ali", "url": "https://github.com/haroon-ali-dev/" },
-    { "name": "Lorena Capraru", "url": "https://github.com/LorenaCapraru" },
-    { "name": "Mo Mahboobian", "url": "https://github.com/momahboobian" }
+    {
+      "name": "Haroon Ali",
+      "url": "https://github.com/haroon-ali-dev/"
+    },
+    {
+      "name": "Lorena Capraru",
+      "url": "https://github.com/LorenaCapraru"
+    },
+    {
+      "name": "Mo Mahboobian",
+      "url": "https://github.com/momahboobian"
+    }
   ],
   "repository": {
     "type": "git",
@@ -40,8 +49,8 @@
   },
   "dependencies": {
     "@googleapis/sheets": "^5.0.3",
+    "@octokit/core": "^5.0.0",
     "@octokit/plugin-throttling": "^7.0.0",
-    "@octokit/rest": "^20.0.1",
     "dotenv": "^16.3.1"
   }
 }

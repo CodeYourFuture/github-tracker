@@ -1,5 +1,5 @@
+import { Octokit } from "@octokit/core";
 import { throttling } from "@octokit/plugin-throttling";
-import { Octokit } from "@octokit/rest";
 
 export class GitHub {
 
@@ -19,6 +19,18 @@ export class GitHub {
 		}));
 	}
 
+	static USER_QUERY = `
+		query GetUsers($q: String!) {
+			search(first: 1, query: $q, type: USER) {
+				nodes {
+					...on User {
+						login
+					}
+				}
+			}
+		}
+	`;
+
 	/**
 	 * @param {Octokit} service
 	 */
@@ -33,7 +45,7 @@ export class GitHub {
 	 * @returns {Promise<number>}
 	 */
 	async commitsBetween(username, start, end) {
-		const { data: { total_count } } = await this.service.search.commits({
+		const { data: { total_count } } = await this.service.request("GET /search/commits", {
 			q: `author:${username} author-date:${this._toISODate(start)}..${this._toISODate(end)}`,
 		});
 		return total_count;
@@ -45,15 +57,12 @@ export class GitHub {
 	 */
 	async validUsername(username) {
 		const canonical = username.toLowerCase();
-		try {
-			const { data: { items } } = await this.service.search.users({ q: `user:${canonical}` });
-			return items.find(({ login }) => login.toLowerCase() === canonical) !== undefined;
-		} catch (/** @type {any} */err) {
-			if (err.status === 422) {
-				return false;
-			}
-			throw err;
-		}
+		/** @type {{ search: { nodes: { login: string }[] } }} */
+		const { search: { nodes: items } } = await this.service.graphql({
+			q: `user:${canonical}`,
+			query: GitHub.USER_QUERY,
+		});
+		return items.find(({ login }) => login.toLowerCase() === canonical) !== undefined;
 	}
 
 	/**
