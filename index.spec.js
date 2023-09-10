@@ -26,6 +26,27 @@ describe("Core", () => {
 		]);
 	});
 
+	it("gets 28 days' data if required", async () => {
+		const commitsBetween = mock.fn(() => Promise.resolve(5));
+		const updateCommits = mock.fn();
+		const core = new Core({
+			getUsernames: mock.fn(() => Promise.resolve(["foo"])),
+			updateCommits,
+		}, {
+			commitsBetween,
+			validUsername: mock.fn(() => Promise.resolve(true)),
+		});
+
+		await core.process(configStub({ averageRange: "averageRange" }));
+
+		assert.equal(commitsBetween.mock.calls.length, 2);
+		const ranges = commitsBetween.mock.calls.map(({ arguments: [, start, end] }) => end - start);
+		assert.deepEqual(ranges, [daysInMs(7), daysInMs(28)]);
+		assert.equal(updateCommits.mock.calls.length, 2);
+		assert.deepEqual(updateCommits.mock.calls[0].arguments, ["spreadsheetId", "worksheetName", "commitRange", [5]]);
+		assert.deepEqual(updateCommits.mock.calls[1].arguments, ["spreadsheetId", "worksheetName", "averageRange", [1.25]]);
+	});
+
 	describe("date range", () => {
 		it("ends with today by default", async () => {
 			const commitsBetween = mock.fn(() => 123);
@@ -42,8 +63,8 @@ describe("Core", () => {
 			assert.equal(commitsBetween.mock.calls.length, 1);
 			const { arguments: [username, start, end] } = commitsBetween.mock.calls.at(-1);
 			assert.equal(username, "foo");
-			assert.equal(end.getTime(), new Date().setHours(12, 0, 0, 0), "should end at midday today");
-			assert.equal(end - start, 7 * 24 * 60 * 60 * 1_000, "should cover 7 days");
+			assert.equal(end.getTime(), new Date().setHours(12, 0, 0, 0));
+			assert.equal(end - start, daysInMs(7));
 		});
 
 		it("can be given an alternative end date", async () => {
@@ -61,7 +82,7 @@ describe("Core", () => {
 
 			const { arguments: [, start, end] } = commitsBetween.mock.calls.at(-1);
 			assert.equal(end.getTime(), endDate.getTime());
-			assert.equal(end - start, 7 * 24 * 60 * 60 * 1_000);
+			assert.equal(end - start, daysInMs(7));
 		});
 	});
 });
@@ -73,3 +94,5 @@ const configStub = (overrides) => ({
 	worksheetName: "worksheetName",
 	...overrides,
 });
+
+const daysInMs = (days) => days * 24 * 60 * 60 * 1_000;

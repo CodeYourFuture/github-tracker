@@ -4,15 +4,19 @@ GitHub APIs and Google Sheets, together at last.
 
 ## Configuration
 
-The following environment variables are used:
+The following environment variables are required:
 
-- `COMMIT_RANGE` (default `"B2:B"`): The range where the commits will be written.
-- `END_DATE`: Override the end date for the commit analysis (must be an ISO 8601 format string, e.g. `"2021-02-03"`).
+- `COMMIT_RANGE`: The range where the commits will be written.
 - `GITHUB_TOKEN`: Token for accessing the GitHub APIs.
 - `GOOGLE_CREDENTIALS`: Credentials required to access the Google Sheets API.
 - `SPREADSHEET_ID`: The spreadsheet ID is shown in the sheet URL: `https://docs.google.com/spreadsheets/d/<here>/edit#gid=0`.
-- `WORKSHEET_NAME` (default `"GitHubData"`): The worksheet where the usernames will be listed.
-- `USER_RANGE` (default `"A2:A"`): The range where the usernames will be listed.
+- `WORKSHEET_NAME`: The worksheet where the usernames will be listed.
+- `USER_RANGE`: The range where the usernames will be listed.
+
+The following configuration is optional:
+
+- `AVERAGE_RANGE`: The range where the monthly average weekly commits will be written.
+- `END_DATE`: Override the end date for the commit analysis (must be an ISO 8601 format string, e.g. `"2021-02-03"`).
 
 ## Production setup
 
