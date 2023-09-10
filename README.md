@@ -15,6 +15,7 @@ The following environment variables are required:
 
 The following configuration is optional:
 
+- `AVERAGE_RANGE`: The range where the monthly average weekly commits will be written.
 - `END_DATE`: Override the end date for the commit analysis (must be an ISO 8601 format string, e.g. `"2021-02-03"`).
 
 ## Production setup

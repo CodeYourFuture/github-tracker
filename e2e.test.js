@@ -101,6 +101,29 @@ describe("GitHub Tracker", () => {
 		});
 	});
 
+	it("collects monthly average commits per week", async () => {
+		const title = await createSheet([
+			["GitHub ID", "Commits last week", "Average weekly commits last month"],
+			["textbook"],
+			["definitely-does-not-exist-as-a-user-1"],
+		]);
+
+		await runScript({
+			AVERAGE_RANGE: "C2:C",
+			COMMIT_RANGE: "B2:B",
+			END_DATE: "2023-06-18",
+			USER_RANGE: "A2:A",
+			WORKSHEET_NAME: title,
+		});
+
+		const data = await getData(`${title}!A2:C`);
+		const commitAverages = Object.fromEntries(data.map(([user, , average]) => [user, average]));
+		assert.deepEqual(commitAverages, {
+			"definitely-does-not-exist-as-a-user-1": "#N/A",
+			textbook: "3.25",
+		});
+	});
+
 	/**
 	 * @param {string[][]} values
 	 * @returns {Promise<string>}

@@ -25,6 +25,7 @@ const core = new Core(
 const debug = process.env.LOG_LEVEL?.toUpperCase() === "DEBUG";
 
 const sheetsConfig = {
+	averageRange: process.env.AVERAGE_RANGE,
 	commitRange: process.env.COMMIT_RANGE ?? "",
 	end: process.env.END_DATE !== undefined ? new Date(process.env.END_DATE) : undefined,
 	spreadsheetId: process.env.SPREADSHEET_ID ?? "",
