@@ -25,10 +25,10 @@ export class Core {
 		for (let index = 0; index < users.length; index++) {
 			const username = users[index];
 			log("Processing %d / %d", index + 1, users.length);
-			if (!await this.github.validUsername(username)) {
-				lastWeekCommits.push(NaN);
-			} else {
+			if (username && await this.github.validUsername(username)) {
 				lastWeekCommits.push(await this.github.commitsBetween(username, oneWeekPrior, upTo));
+			} else {
+				lastWeekCommits.push(NaN);
 			}
 		}
 

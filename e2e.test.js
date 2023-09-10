@@ -76,6 +76,28 @@ describe("GitHub Tracker", () => {
 		});
 	});
 
+	it("tolerates empty rows", async () => {
+		const title = await createSheet([
+			["GitHub ID", "Commits last week"],
+			["textbook"],
+			[],
+			["lorenacapraru"],
+		]);
+
+		await runScript({ END_DATE: "2023-06-18", WORKSHEET_NAME: title });
+
+		const { data: { values } } = await sheetsClient.spreadsheets.values.get({
+			range: `${title}!A2:B`,
+			spreadsheetId,
+		});
+		const commitCounts = Object.fromEntries(values);
+		assert.deepEqual(commitCounts, {
+			"": "#N/A",
+			lorenacapraru: "2",
+			textbook: "1",
+		});
+	});
+
 	/**
 	 * @param {string[][]} values
 	 * @returns {Promise<string>}
