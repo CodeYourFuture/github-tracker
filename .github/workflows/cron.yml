@@ -23,7 +23,8 @@ jobs:
           - commitRange: "N3:N"
             userRange: "M3:M"
             worksheetName: "North West"
-          - commitRange: "M3:M"
+          - averageRange: "N3:N"
+            commitRange: "M3:M"
             userRange: "L3:L"
             worksheetName: "West Midlands"
     name: "Weekly update: ${{ matrix.worksheetName }}"
@@ -36,6 +37,7 @@ jobs:
       - run: npm ci --omit dev
       - run: npm start
         env:
+          AVERAGE_RANGE: ${{ matrix.averageRange || "" }}
           COMMIT_RANGE: ${{ matrix.commitRange }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
