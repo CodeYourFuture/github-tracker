@@ -35,13 +35,14 @@ describe("GitHub Tracker", () => {
 			["LorenaCapraru"],
 		]);
 
-		await runScript({ END_DATE: "2023-06-18", WORKSHEET_NAME: title });
-
-		const { data: { values } } = await sheetsClient.spreadsheets.values.get({
-			range: `${title}!A2:B`,
-			spreadsheetId,
+		await runScript({
+			COMMIT_RANGE: "B2:B",
+			END_DATE: "2023-06-18",
+			USER_RANGE: "A2:A",
+			WORKSHEET_NAME: title,
 		});
-		const commitCounts = Object.fromEntries(values);
+
+		const commitCounts = Object.fromEntries(await getData(`${title}!A2:B`));
 		assert.deepEqual(commitCounts, {
 			"definitely-does-not-exist-as-a-user-1": "#N/A",
 			"definitely-does-not-exist-as-a-user-2": "#N/A",
@@ -61,13 +62,14 @@ describe("GitHub Tracker", () => {
 			["lorenacapraru"],
 		]);
 
-		await runScript({ END_DATE: "2023-06-18", WORKSHEET_NAME: title });
-
-		const { data: { values } } = await sheetsClient.spreadsheets.values.get({
-			range: `${title}!A2:B`,
-			spreadsheetId,
+		await runScript({
+			COMMIT_RANGE: "B2:B",
+			END_DATE: "2023-06-18",
+			USER_RANGE: "A2:A",
+			WORKSHEET_NAME: title,
 		});
-		const commitCounts = Object.fromEntries(values);
+
+		const commitCounts = Object.fromEntries(await getData(`${title}!A2:B`));
 		assert.deepEqual(commitCounts, {
 			"Haroon-Ali-DEV": "96",
 			lorenacapraru: "2",
@@ -84,13 +86,14 @@ describe("GitHub Tracker", () => {
 			["lorenacapraru"],
 		]);
 
-		await runScript({ END_DATE: "2023-06-18", WORKSHEET_NAME: title });
-
-		const { data: { values } } = await sheetsClient.spreadsheets.values.get({
-			range: `${title}!A2:B`,
-			spreadsheetId,
+		await runScript({
+			COMMIT_RANGE: "B2:B",
+			END_DATE: "2023-06-18",
+			USER_RANGE: "A2:A",
+			WORKSHEET_NAME: title,
 		});
-		const commitCounts = Object.fromEntries(values);
+
+		const commitCounts = Object.fromEntries(await getData(`${title}!A2:B`));
 		assert.deepEqual(commitCounts, {
 			"": "#N/A",
 			lorenacapraru: "2",
@@ -130,6 +133,18 @@ function authenticatedClient() {
 	/** @type {any} - for some reason this doesn't typecheck */
 	const googleAuth = auth.fromJSON(JSON.parse(process.env.GOOGLE_CREDENTIALS ?? "{}"));
 	return sheets({ auth: googleAuth, version: "v4" });
+}
+
+/**
+ * @param {string} range
+ * @returns {Promise<string[][]>}
+ */
+async function getData(range) {
+	const { data: { values } } = await sheetsClient.spreadsheets.values.get({
+		range,
+		spreadsheetId,
+	});
+	return values;
 }
 
 /**
