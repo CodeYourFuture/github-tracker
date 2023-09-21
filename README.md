@@ -39,5 +39,36 @@ For development purposes we can use the narrower `"https://www.googleapis.com/au
 - Use `npm run setup` to generate the appropriate credentials and create a test spreadsheet for you. This will output data to add to your `.env` file.
 - Use `npm run ship` to ensure that the linting, type checks and tests pass.
 
+## Overview
+
+```mermaid
+sequenceDiagram
+    participant trigger as Weekly cron trigger
+    participant app as GitHub Tracker
+    participant sheets as Google Sheets
+    participant github as GitHub
+    loop For each city
+        trigger ->>+ app: Run for city
+        app ->>+ sheets: Get usernames
+        sheets -->>- app: 
+        loop For each username
+            app ->>+ github: Search username
+            github -->>- app: 
+
+            alt Username exists
+                app ->>+ github: Get 7 day commit count
+                github -->>- app: 
+                alt Monthly average requested
+                app ->>+ github: Get 28 day commit count
+                github -->>- app: 
+                end
+            end
+        end
+        app ->>+ sheets: Overwrite commit data
+        sheets -->>- app: 
+        app -->>- trigger: exit 0
+    end
+```
+
 [github personal access token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic
 [google developer docs]: https://developers.google.com/sheets/api/quickstart/nodejs#set_up_your_environment
