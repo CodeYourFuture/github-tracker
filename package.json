@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --project ./tsconfig.check.json",
     "test": "node --test *.spec.js",
+    "test:cover": "node --experimental-test-coverage --test *.spec.js",
     "setup": "node setup.js",
     "ship": "npm run lint && npm run typecheck && npm run test && npm run e2e",
     "start": "node cli.js"
