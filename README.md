@@ -39,6 +39,10 @@ For development purposes we can use the narrower `"https://www.googleapis.com/au
 - Use `npm run setup` to generate the appropriate credentials and create a test spreadsheet for you. This will output data to add to your `.env` file.
 - Use `npm run ship` to ensure that the linting, type checks and tests pass.
 
+### Refreshing credentials
+
+If your credentials expire, you can recreate them _without_ creating a new spreadsheet by running `npm run setup -- --refresh`.
+
 ## Overview
 
 ```mermaid

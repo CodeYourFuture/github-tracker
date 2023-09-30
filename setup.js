@@ -14,10 +14,11 @@ import { auth, sheets } from "@googleapis/sheets";
  *  @typedef {import("@googleapis/sheets").sheets_v4.Schema$Spreadsheet} Spreadsheet
  *  */
 
-const { values } = parseArgs({
+const { values: options } = parseArgs({
 	options: {
 		credentials: { default: false, short: "c", type: "boolean" },
 		file: { short: "f", type: "string" },
+		refresh: { default: false, short: "r", type: "boolean" },
 	},
 });
 
@@ -25,7 +26,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const credentialsFile = join(__dirname, values.file ?? "credentials.json");
 
 try {
-	if (values.credentials) {
+	if (options.credentials) {
 		const credentials = await getCredentials(
 			credentialsFile,
 			"https://www.googleapis.com/auth/spreadsheets",
@@ -36,14 +37,23 @@ try {
 	}
 
 	const credentials = await getCredentials(credentialsFile, "https://www.googleapis.com/auth/drive.file");
-	const client = createAuthenticatedClient(credentials);
-	const { spreadsheetId, spreadsheetUrl } = await createSheet(client, "CYF GitHub Tracker E2E Testing");
+	let spreadsheetId, spreadsheetUrl;
+	if (options.refresh) {
+		const client = createAuthenticatedClient(credentials);
+		({ spreadsheetId, spreadsheetUrl } = await createSheet(client, "CYF GitHub Tracker E2E Testing"));
+	}
+
 	console.log("Add the following to your .env file:");
 	console.log("====================");
 	console.log(`GOOGLE_CREDENTIALS=${JSON.stringify(credentials)}`);
-	console.log(`SPREADSHEET_ID=${spreadsheetId}`);
+	if (options.refresh) {
+		console.log(`SPREADSHEET_ID=${spreadsheetId}`);
+	}
 	console.log("====================");
-	console.log("Spreadsheet URL:", spreadsheetUrl);
+
+	if (options.refresh) {
+		console.log("Spreadsheet URL:", spreadsheetUrl);
+	}
 } catch (err) {
 	console.error(err);
 	process.exit(1);
