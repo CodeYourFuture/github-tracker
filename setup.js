@@ -23,7 +23,7 @@ const { values: options } = parseArgs({
 });
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const credentialsFile = join(__dirname, values.file ?? "credentials.json");
+const credentialsFile = join(__dirname, options.file ?? "credentials.json");
 
 try {
 	if (options.credentials) {
