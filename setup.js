@@ -6,7 +6,8 @@ import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
 import { authenticate } from "@google-cloud/local-auth";
-import { auth, sheets } from "@googleapis/sheets";
+
+import { GoogleSheets } from "./googleSheets.js";
 
 /**
  *  @typedef {import("@googleapis/sheets").sheets_v4.Schema$Sheet} Sheet
@@ -36,53 +37,26 @@ try {
 		process.exit(0);
 	}
 
-	const credentials = await getCredentials(credentialsFile, "https://www.googleapis.com/auth/drive.file");
-	let spreadsheetId, spreadsheetUrl;
-	if (options.refresh) {
-		const client = createAuthenticatedClient(credentials);
-		({ spreadsheetId, spreadsheetUrl } = await createSheet(client, "CYF GitHub Tracker E2E Testing"));
-	}
+	const credentials = await getCredentials(
+		credentialsFile,
+		"https://www.googleapis.com/auth/drive.file",
+	);
+	/** @type {Record<string, string | null | undefined>} */
+	const environmentVariables = {
+		GOOGLE_CREDENTIALS: JSON.stringify(credentials),
+	};
 
-	console.log("Add the following to your .env file:");
-	console.log("====================");
-	console.log(`GOOGLE_CREDENTIALS=${JSON.stringify(credentials)}`);
-	if (options.refresh) {
-		console.log(`SPREADSHEET_ID=${spreadsheetId}`);
-	}
-	console.log("====================");
-
-	if (options.refresh) {
+	if (!options.refresh) {
+		const client = GoogleSheets.fromCredentials(credentials);
+		const { spreadsheetId, spreadsheetUrl } = await client.createSheet("CYF GitHub Tracker E2E Testing");
+		environmentVariables.SPREADSHEET_ID = spreadsheetId;
 		console.log("Spreadsheet URL:", spreadsheetUrl);
 	}
+
+	logEnvVars(environmentVariables);
 } catch (err) {
 	console.error(err);
 	process.exit(1);
-}
-
-/**
- * @param {any} credentials
- * @returns {Sheets}
- */
-function createAuthenticatedClient(credentials) {
-	/** @type {any} */
-	const googleAuth = auth.fromJSON(credentials);
-	return sheets({ auth: googleAuth, version: "v4" });
-}
-
-/**
- * @param {Sheets} client
- * @param {string} title
- * @returns {Promise<Spreadsheet>}
- */
-async function createSheet(client, title) {
-	const { data: sheet } = await client.spreadsheets.create({
-		requestBody: {
-			properties: {
-				title,
-			},
-		},
-	});
-	return sheet;
 }
 
 /**
@@ -94,4 +68,16 @@ async function getCredentials(keyfilePath, scope) {
 	const { installed: { client_id, client_secret } } = JSON.parse(await readFile(keyfilePath, "utf-8"));
 	const { credentials: { refresh_token } } = await authenticate({ keyfilePath, scopes: [scope] });
 	return { client_id, client_secret, refresh_token, type: "authorized_user" };
+}
+
+/**
+ * @param {Object} vars
+ */
+function logEnvVars(vars) {
+	console.log("Add the following to your .env file:");
+	console.log("====================");
+	Object.entries(vars).forEach(([key, value]) => {
+		console.log(`${key}=${value}`);
+	});
+	console.log("====================");
 }

@@ -19,6 +19,21 @@ export class GoogleSheets {
 	}
 
 	/**
+	 * @param {string} title
+	 * @returns {Promise<import("@googleapis/sheets").sheets_v4.Schema$Spreadsheet>}
+	 */
+	async  createSheet(title) {
+		const { data: sheet } = await this.service.spreadsheets.create({
+			requestBody: {
+				properties: {
+					title,
+				},
+			},
+		});
+		return sheet;
+	}
+
+	/**
    * @param {string} spreadsheetId
    * @param {string} worksheetName
    * @param {string} userRange

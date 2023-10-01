@@ -12,7 +12,11 @@ describe("GoogleSheets", () => {
 	/** @type {GoogleSheets} */
 	let sheets;
 
-	before(() => server.listen({ onUnhandledRequest: "error" }));
+	before(() => server.listen({
+		onUnhandledRequest({ method, url }) {
+			throw new Error(`unhandled ${method} request to ${url}`);
+		},
+	}));
 
 	beforeEach(() => {
 		server.resetHandlers();
@@ -25,6 +29,27 @@ describe("GoogleSheets", () => {
 	});
 
 	after(() => server.close());
+
+	describe("createSpreadsheet", () => {
+		it("posts data to the sheets API", async () => {
+			const responseBody = { spreadsheetId: "spreadsheetId", spreadsheetUrl: "spreadsheetUrl" };
+			const title = "Bananaman";
+			/** @type {import("msw").RestRequest} */
+			let request;
+			server.use(
+				rest.post("https://oauth2.googleapis.com/token", (_, res, ctx) => res(ctx.json({ access_token: "fake-token" }))),
+				rest.post("https://sheets.googleapis.com/v4/spreadsheets", (req, res, ctx) => {
+					request = req;
+					return res(ctx.json(responseBody));
+				}),
+			);
+
+			const result = await sheets.createSheet(title);
+
+			assert.deepEqual(result, responseBody);
+			assert.deepEqual(await request.json(), { properties: { title } });
+		});
+	});
 
 	describe("getUsernames", () => {
 		it("gets data from the Sheets API", async () => {
