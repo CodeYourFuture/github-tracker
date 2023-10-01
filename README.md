@@ -23,7 +23,7 @@ The following configuration is optional:
 It's assumed that the spreadsheet(s) to use will already exist, so we need to use the broader `"https://www.googleapis.com/auth/spreadsheets"` scope (which grants access to _all_ spreadsheets in the account) in production.
 
 - Generate a project, OAuth app and `credentials.json` file as described in the [Google Developer docs].
-- Run `npm run setup -- --credentials` to generate the appropriate credentials
+- Run `npm run setup` to generate the appropriate credentials
 - Set the `SPREADSHEET_ID`, `COMMIT_RANGE` and `USER_RANGE` as needed.
 
 ## Dev setup
@@ -36,12 +36,12 @@ For development purposes we can use the narrower `"https://www.googleapis.com/au
     GITHUB_TOKEN=<...>
     ```
 - Generate a project, OAuth app and `credentials.json` file as described in the [Google Developer docs].
-- Use `npm run setup` to generate the appropriate credentials and create a test spreadsheet for you. This will output data to add to your `.env` file.
+- Use `npm run setup` to generate the appropriate credentials and select the option to create a spreadsheet for you. This will output data to add to your `.env` file.
 - Use `npm run ship` to ensure that the linting, type checks and tests pass.
 
 ### Refreshing credentials
 
-If your credentials expire, you can recreate them _without_ creating a new spreadsheet by running `npm run setup -- --refresh`.
+If your credentials expire, you can recreate them _without_ creating a new spreadsheet by running `npm run setup` and selecting the appropriate option.
 
 ## Overview
 
