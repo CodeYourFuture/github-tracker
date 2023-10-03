@@ -23,7 +23,7 @@ The following configuration is optional:
 It's assumed that the spreadsheet(s) to use will already exist, so we need to use the broader `"https://www.googleapis.com/auth/spreadsheets"` scope (which grants access to _all_ spreadsheets in the account) in production.
 
 - Generate a project, OAuth app and `credentials.json` file as described in the [Google Developer docs].
-- Run `npm run setup` to generate the appropriate credentials
+- Run `npm run setup -- --production` to generate the appropriate credentials
 - Set the `SPREADSHEET_ID`, `COMMIT_RANGE` and `USER_RANGE` as needed.
 
 ## Dev setup

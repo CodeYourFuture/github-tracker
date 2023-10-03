@@ -1,12 +1,24 @@
 #!/usr/bin/env node
 
 import { readFile } from "node:fs/promises";
+import { parseArgs } from "node:util";
 
 import { authenticate } from "@google-cloud/local-auth";
 import inquirer from "inquirer";
 import inquirerFileTreeSelection from "inquirer-file-tree-selection-prompt";
 
 import { GoogleSheets } from "./googleSheets.js";
+
+const { values } = parseArgs({
+	allowPositionals: false,
+	options: {
+		production: {
+			default: false,
+			type: "boolean",
+		},
+	},
+	strict: true,
+});
 
 /**
  *  @typedef {{
@@ -34,11 +46,11 @@ const options = await inquirer.prompt([
 		choices: [
 			{
 				name:
-					"See, edit, create, and delete only the specific Google Drive files you use with this app",
+					"Dev - \"See, edit, create, and delete only the specific Google Drive files you use with this app\"",
 				value: "https://www.googleapis.com/auth/drive.file",
 			},
 			{
-				name: "See, edit, create, and delete all your Google Sheets spreadsheets",
+				name: "Prod - \"See, edit, create, and delete all your Google Sheets spreadsheets\"",
 				value: "https://www.googleapis.com/auth/spreadsheets",
 			},
 		],
@@ -83,7 +95,7 @@ const options = await inquirer.prompt([
 			return createSheet;
 		},
 	},
-], {});
+], values);
 
 try {
 	const credentials = await getCredentials(options.credentialsFile, options.scope);
