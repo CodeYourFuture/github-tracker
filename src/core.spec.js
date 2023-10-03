@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it, mock } from "node:test";
 
-import { Core } from "./index.js";
+import { Core } from "./core.js";
 
 describe("Core", () => {
 	it("orchestrates the services correctly", async () => {

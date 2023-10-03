@@ -176,7 +176,7 @@ async function getData(range) {
  */
 function runScript(env) {
 	return new Promise((resolve, reject) => exec(
-		"node cli.js",
+		"node bin/cli.js",
 		{ env: { ...process.env, ...env } },
 		(err, stdout, stderr) => {
 			if (err) {

@@ -4,9 +4,7 @@ import "dotenv/config";
 import * as readline from "node:readline";
 import { format } from "node:util";
 
-import { GitHub } from "./github.js";
-import { GoogleSheets } from "./googleSheets.js";
-import { Core } from "./index.js";
+import { Core, GitHub, GoogleSheets } from "../src/index.js";
 
 validateEnv([
 	"COMMIT_RANGE",

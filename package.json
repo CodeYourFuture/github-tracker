@@ -3,19 +3,19 @@
   "version": "0.1.0",
   "description": "GitHub APIs and Google Sheets, together at last",
   "type": "module",
-  "main": "index.js",
+  "main": "src/index.js",
   "engines": {
     "node": "^20"
   },
   "scripts": {
     "e2e": "node --test e2e.test.js",
     "lint": "eslint .",
-    "typecheck": "tsc --project ./tsconfig.check.json",
-    "test": "node --test *.spec.js",
-    "test:cover": "node --experimental-test-coverage --test *.spec.js",
-    "setup": "node setup.js",
+    "typecheck": "tsc",
+    "test": "node --test src/*.spec.js",
+    "test:cover": "node --experimental-test-coverage --test src/*.spec.js",
+    "setup": "node bin/setup.js",
     "ship": "npm run lint && npm run typecheck && npm run test && npm run e2e",
-    "start": "node cli.js"
+    "start": "node bin/cli.js"
   },
   "keywords": [],
   "author": "Jonathan Sharpe <jonathan@codeyourfuture.io>",
